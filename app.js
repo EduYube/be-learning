@@ -1,8 +1,13 @@
 const express = require('express');
 const fs = require('fs');
-const { get } = require('http');
+const morgan = require('morgan');
 
 const app = express();
+
+// Middleware region
+// Use morgan middleware for logging
+app.use(morgan('dev'));
+
 app.use(express.json()); // Middleware to parse JSON bodies
 
 // Dummy middleware to add request timestamp conversion and make it usable in all requests
@@ -10,6 +15,8 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+// Methods region
 const port = 3000;
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
@@ -148,6 +155,7 @@ const deleteTour = (req, res) => {
   );
 };
 
+// Routes region
 app.route('/api/v1/tours')
   .get(getAllTours)
   .post(createTour);
@@ -157,6 +165,7 @@ app.route('/api/v1/tours/:id')
   .patch(updateTour)
   .delete(deleteTour);
 
+// Start server region
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
