@@ -5,13 +5,21 @@ const { get } = require('http');
 const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
 
+// Dummy middleware to add request timestamp conversion and make it usable in all requests
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 const port = 3000;
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
 // get all tours
 const getAllTours = (req, res) => {
+  const timeStamp = req.requestTime;
+  timeStamp = new Date().toISOString();
   res.status(200).json({
     status: 'success',
+    requestTime: req.requestTime, // \wo middleware we need to declare requestTime: req.requestTime = new Date().toISOString() in every single route handler,
     results: tours.length,
     data: {
       tours
