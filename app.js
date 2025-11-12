@@ -66,6 +66,44 @@ app.post('/api/v1/tours', (req, res) => {
 
 });
 
+// update a tour. Better to use PATCH for partial updates instead of PUT with the full object
+app.patch('/api/v1/tours/:id', (req, res) => {
+
+  const id = req.params.id * 1; // convert string to number
+  const oldTour = tours.find(el => el.id === id);
+
+  if(!oldTour){
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Tour to modify not found'
+    });
+  }
+  
+  const updatedTour = Object.assign(oldTour, req.body);
+
+  tours[id] = updatedTour;
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    err => {
+      if (err) {
+        console.log('Error writing file', err);
+        res.status(500).json({
+          status: 'error',
+          message: 'Could not update the tour'
+        });
+      } else {
+        res.status(200).json({
+          status: 'success',
+          data: {
+            message: `Tour ${updatedTour.name} updated successfully`,
+          }
+        });
+      }
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
