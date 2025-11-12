@@ -155,6 +155,14 @@ const deleteTour = (req, res) => {
   );
 };
 
+// get user
+const getAllUser = (req, res) => {
+    res.status(500).json({
+      status: 'error',
+      message: 'This route is not yet defined'
+    });
+  };
+
 // Routes region
 app.route('/api/v1/tours')
   .get(getAllTours)
@@ -164,6 +172,9 @@ app.route('/api/v1/tours/:id')
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+app.route('/api/v1/users')
+  .get(getAllUser);
 
 // Start server region
 app.listen(port, () => {
