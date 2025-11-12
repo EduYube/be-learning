@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const { get } = require('http');
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
@@ -8,7 +9,7 @@ const port = 3000;
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
 // get all tours
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -16,11 +17,11 @@ app.get('/api/v1/tours', (req, res) => {
       tours
     }
   });
-});
+};
 
 // get a specific tour marked by id
 // could mkae optional parameters with '?' after param name, f.ex. ':id?'
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   const id = req.params.id * 1; // convert string to number
   const tour = tours.find(el => el.id === id);
   if(tour){
@@ -36,10 +37,10 @@ app.get('/api/v1/tours/:id', (req, res) => {
       message: 'Tour not found'
     });
   }
-});
+};
 
 // create a new tour
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
@@ -64,10 +65,10 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
 
-});
+};
 
 // update a tour. Better to use PATCH for partial updates instead of PUT with the full object
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
 
   const id = req.params.id * 1; // convert string to number
   const oldTour = tours.find(el => el.id === id);
@@ -102,9 +103,10 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       }
     }
   );
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+// delete a tour
+const deleteTour = (req, res) => {
   const id = req.params.id * 1; // convert string to number
   const tour = tours.find(el => el.id === id);
 
@@ -136,7 +138,17 @@ app.delete('/api/v1/tours/:id', (req, res) => {
       }
     }
   );
-});
+};
+
+app.get('/api/v1/tours', getAllTours);
+
+app.get('/api/v1/tours/:id', getTour);
+
+app.post('/api/v1/tours', createTour);
+
+app.patch('/api/v1/tours/:id', updateTour);
+
+app.delete('/api/v1/tours/:id', deleteTour);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
