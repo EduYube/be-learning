@@ -78,7 +78,7 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       message: 'Tour to modify not found'
     });
   }
-  
+
   const updatedTour = Object.assign(oldTour, req.body);
 
   tours[id] = updatedTour;
@@ -97,6 +97,40 @@ app.patch('/api/v1/tours/:id', (req, res) => {
           status: 'success',
           data: {
             message: `Tour ${updatedTour.name} updated successfully`,
+          }
+        });
+      }
+    }
+  );
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1; // convert string to number
+  const tour = tours.find(el => el.id === id);
+
+  if(!tour){
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Tour to delete not found'
+    });
+  }
+  
+  tours.splice(tour.id, 1); 
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    err => {
+      if (err) {
+        console.log('Error writing file', err);
+        res.status(500).json({
+          status: 'error',
+          message: 'Could not delete the tour'
+        });
+      } else {
+        res.status(200).json({
+          status: 'success',
+          data: {
+            message: `Tour ${tour.name} deleted successfully`,
           }
         });
       }
