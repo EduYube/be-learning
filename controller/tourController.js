@@ -4,6 +4,17 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-si
 
 // Methods region
 
+exports.checkId = (req, res, next, val) => {
+  console.log(`Tour ID: ${val}`);
+  if (isNaN(val) || val > tours.length) { // assuming ids are sequential and start from 1
+    return res.status(404).json({
+      status: 'fail', 
+      message: 'Invalid ID'
+    });
+  }    
+  next();
+};
+
 // get all tours
 exports.getAllTours = (req, res) => {
   timeStamp = new Date().toISOString();
@@ -28,11 +39,6 @@ exports.getTour = (req, res) => {
       data: {
         tour
       }
-    });
-  } else {
-    res.status(404).json({
-      status: 'fail',
-      message: 'Tour not found'
     });
   }
 };
