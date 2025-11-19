@@ -1,8 +1,9 @@
 const fs = require('fs');
+const path = require('path');
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
-// Methods region
+// Middleware region
 
 exports.checkId = (req, res, next, val) => {
   console.log(`Tour ID: ${val}`);
@@ -14,6 +15,23 @@ exports.checkId = (req, res, next, val) => {
   }    
   next();
 };
+
+
+// create a checkBody middleware
+// Check if the body contains the name and price propertys
+// If not, send back 400 (bad request)
+// Add it to the post handler stack
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).send({
+      status: 'fail',
+      message: 'Missing name or price',
+    });
+  }
+  next();
+};
+
+// Methods region
 
 // get all tours
 exports.getAllTours = (req, res) => {
@@ -49,7 +67,7 @@ exports.createTour = (req, res) => {
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    path.resolve(__dirname, '..', 'dev-data', 'data', 'tours-simple.json'),
     JSON.stringify(tours),
     err => {
       if (err) {
