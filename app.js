@@ -7,7 +7,9 @@ const app = express();
 
 // Middleware region
 // Use morgan middleware for logging
-app.use(morgan('dev'));
+if(process.env.NODE_ENV === 'development'){
+  app.use(morgan('dev'));
+}
 
 app.use(express.json()); // Middleware to parse JSON bodies
 

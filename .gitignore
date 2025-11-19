@@ -1,6 +1,10 @@
-/node_modules
+node_modules/
 /dev-data
 .DS_Store
 .env
 /img
 /templates
+dev-data/data/tours-simple.json
+node_modules/.package-lock.json
+package-lock.json
+dev-data/data/tours-simple.json
