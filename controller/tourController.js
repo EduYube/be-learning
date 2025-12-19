@@ -28,6 +28,14 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('-price'); // default sort by price descending because the - operator
     }
 
+    // limiting fields
+    if(req.query.fields){
+      const fields = req.query.fields.split(',').join(' '); // to allow multiple fields separated by comma
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v'); // exclude __v field by default
+    }
+
     const tours = await query; // execute the query
 
     // SEND RESPONSE

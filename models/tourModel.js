@@ -11,6 +11,11 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a price'],
   },
   rating: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    select: false, // hide from output responses
+  },
 })
 
 const Tour = mongoose.model('Tour', tourSchema);
