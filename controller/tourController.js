@@ -5,9 +5,24 @@ const Tour = require('../models/tourModel');
 
 // get all tours
 exports.getAllTours = async (req, res) => {
-
   try {
-    const tours = await Tour.find();
+    // BUILD THE QUERY
+    let queryObj = { ...req.query }; // to avoid mutating req.query directly
+    const excludedFields = ['page', 'sort', 'limit', 'fields']; // fields we want to exclude from filtering
+    excludedFields.forEach(el => delete queryObj[el]);
+    /*const tours = await Tour.find({ name: 'Tour name', price: {lte: 400}, rating: 4.7 }); una manera de filtrar apoyándonos en moongose es especificándo parámetros en el find() como JSON que suele venir en req.query*/
+    /*const tours = await Tour.find().where('price').equals(499).where('rating').equals(4.7); la otra manera es usando lenguaje más similar a las BDD con verbos como where(...) lo malo es lo que se puede alargar*/
+
+    // Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); // add $ before gte, gt, lte, lt for mongoose query
+    queryObj = JSON.parse(queryStr);
+
+    const query = await Tour.find(queryObj);
+
+    const tours = await query; // execute the query
+
+    // SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length,
