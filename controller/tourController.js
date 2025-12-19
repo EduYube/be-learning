@@ -18,7 +18,15 @@ exports.getAllTours = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); // add $ before gte, gt, lte, lt for mongoose query
     queryObj = JSON.parse(queryStr);
 
-    const query = await Tour.find(queryObj);
+    let query = await Tour.find(queryObj);
+
+    // sorting
+    if(req.query.sort){
+      const sortBy = req.query.sort.split(',').join(' '); // to allow multiple sort criteria separated by comma
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-price'); // default sort by price descending because the - operator
+    }
 
     const tours = await query; // execute the query
 
