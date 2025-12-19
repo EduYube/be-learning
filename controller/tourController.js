@@ -1,6 +1,15 @@
 const path = require('path');
 const Tour = require('../models/tourModel');
 
+// Middleware region
+
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-rating,-price';
+  req.query.fields = 'name,price,rating,difficulty';
+  next();
+}
+
 // Methods region
 
 // get all tours
